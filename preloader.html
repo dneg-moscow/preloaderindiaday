@@ -1,0 +1,181 @@
+<style>
+  /* Preloader overlay */
+  #preloader {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    pointer-events: none;
+  }
+  .preloader-content {
+    position: relative;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .logo {
+    width: 150px;
+    opacity: 0;
+    transform-origin: center;
+    animation: zoomInLarge 2.5s forwards;
+  }
+  @keyframes zoomInLarge {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(2.5);
+      opacity: 1;
+    }
+  }
+  .fade-out {
+    animation: fadeOut 1.5s forwards;
+  }
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  .color-explosion {
+    position: fixed;
+    width: 250px;
+    height: 250px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 10;
+  }
+  #explosion-top-left { top: 0; left: 0; }
+  #explosion-top-right { top: 0; right: 0; }
+  #explosion-bottom-left { bottom: 0; left: 0; }
+  #explosion-bottom-right { bottom: 0; right: 0; }
+  #explosion-random {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 9;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.85;
+    animation: explodeSlow 3s forwards ease-out;
+    will-change: transform, opacity;
+  }
+  @keyframes explodeSlow {
+    to {
+      transform: translate(var(--x), var(--y)) scale(0);
+      opacity: 0;
+    }
+  }
+  /* Responsive for small screens */
+  @media only screen and (max-width: 480px) {
+    #preloader {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .color-explosion {
+      width: 150px;
+      height: 150px;
+    }
+    .logo {
+      width: 120px !important;
+      animation: zoomInLarge 2.5s forwards;
+    }
+  }
+</style>
+
+<div id="preloader">
+  <div class="preloader-content">
+    <img src="YOUR_IMAGE_URL_HERE" alt="Preloader Logo" class="logo" />
+  </div>
+  <div id="explosion-top-left" class="color-explosion"></div>
+  <div id="explosion-top-right" class="color-explosion"></div>
+  <div id="explosion-bottom-left" class="color-explosion"></div>
+  <div id="explosion-bottom-right" class="color-explosion"></div>
+  <div id="explosion-random"></div>
+</div>
+
+<script>
+  (function() {
+    const colors = ['#e91e63', '#ffeb3b', '#4caf50', '#2196f3', '#ff9800'];
+
+    function createParticles(container, count, maxRadius) {
+      for (let i = 0; i < count; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 15 + 10;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+
+        const angle = Math.random() * 2 * Math.PI;
+        const radius = Math.random() * maxRadius + 50;
+        particle.style.setProperty('--x', `${Math.cos(angle) * radius}px`);
+        particle.style.setProperty('--y', `${Math.sin(angle) * radius}px`);
+
+        container.appendChild(particle);
+        particle.addEventListener('animationend', () => particle.remove());
+      }
+    }
+
+    function createRandomExplosions(container, explosionsCount, particlesPerExplosion) {
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      for (let i = 0; i < explosionsCount; i++) {
+        const explosion = document.createElement('div');
+        explosion.style.position = 'absolute';
+        explosion.style.width = '250px';
+        explosion.style.height = '250px';
+        explosion.style.pointerEvents = 'none';
+
+        const x = Math.random() * (vw - 250);
+        const y = Math.random() * (vh - 250);
+        explosion.style.left = `${x}px`;
+        explosion.style.top = `${y}px`;
+        explosion.style.overflow = 'visible';
+
+        container.appendChild(explosion);
+        createParticles(explosion, particlesPerExplosion, 150);
+      }
+    }
+
+    // Wait for the window to fully load
+    window.addEventListener('load', () => {
+      // Trigger explosions after logo zoom-in animation (~2.5s)
+      setTimeout(() => {
+        const corners = [
+          document.getElementById('explosion-top-left'),
+          document.getElementById('explosion-top-right'),
+          document.getElementById('explosion-bottom-left'),
+          document.getElementById('explosion-bottom-right')
+        ];
+        corners.forEach(container => createParticles(container, 25, 180));
+
+        const randomContainer = document.getElementById('explosion-random');
+        createRandomExplosions(randomContainer, 12, 20);
+      }, 2500);
+
+      // Fade out preloader after 6 seconds
+      setTimeout(() => {
+        const preloader = document.getElementById('preloader');
+        preloader.classList.add('fade-out');
+        preloader.addEventListener('animationend', () => {
+          preloader.style.display = 'none';
+        });
+      }, 6000);
+    });
+  })();
+</script>
