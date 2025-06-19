@@ -48,8 +48,6 @@ Here is a demo of what the preloader animation looks like:
 
    ```
     <img src="https://static.wixstatic.com/media/your-uploaded-image.png" alt="Preloader Logo" class="logo" />
-
-
    ```
 
 ### 3. Add the Custom Code to Wix Dashboard
@@ -140,7 +138,6 @@ Here is a demo of what the preloader animation looks like:
 
    ```
    <img src="https://static.wixstatic.com/media/your-uploaded-image.png" alt="Preloader Logo" class="logo" />
-
    ```
 
 ### 3. Добавьте кастомный код в Wix Dashboard
